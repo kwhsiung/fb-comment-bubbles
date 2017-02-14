@@ -1,14 +1,19 @@
 <!DOCTYPE html>
 <meta charset="utf-8">
-<style>
+<head>
+  <script type="text/javascript" src="jf-production-ver.js"></script>
+</head>
+<style type="text/css">
 * {
     /*border: 1px solid red;*/
 }
 
 body {
-  font-family: "Helvetica","Open Sans", "Hiragino Sans GB", "Source Sans Pro", "Microsoft YaHei", "微软雅黑", "STHeiti", "WenQuanYi Micro Hei", sans-serif;
+  /*font-family: "Helvetica","Open Sans", "Hiragino Sans GB", "Source Sans Pro", "Microsoft YaHei", "微软雅黑", "STHeiti", "WenQuanYi Micro Hei", sans-serif;*/
+  font-family: 'xingothic-tc';
   margin: 0;
   padding: 5px;
+  color: #888;
 }
 
 circle {
@@ -34,20 +39,29 @@ circle {
         display: none;
 }
 
-#tooltip p {
+a {
         margin: 0;
-        font-family: sans-serif;
+        font-family: 'xingothic-tc';
         font-size: 16px;
         line-height: 20px;
 }
 
-h1 {
+input {
+  font-family: 'jf-jinxuan';
+}
+
+.title {
+  font-family: 'xingothic-tc';
   /*text-align: center;*/
   padding-left: 10px;
   margin-bottom: 2px;
   color: #333;
 }
+#label {
+  border-bottom: solid 1px #CCC;
+}
 .source {
+  font-family: 'xingothic-tc';
   text-align: center;
   padding-left: 10px;
 }
@@ -79,7 +93,7 @@ img {
 <!-- <p id="like_count">likes</p>
 <p id="message">message</p> -->
 <title>Facebook 單篇文章評論情況泡泡圖</title>
-<h1 style="text-align: center;">Facebook 單篇文章評論情況泡泡圖</h1>
+<h1 class="title" style="text-align: center;">Facebook 單篇文章評論情況泡泡圖</h1>
 <div class="source">
 <a>利用 Multi-Foci Force Layout 將 Facebook 單篇文章中，一則回應以上的評論進行視覺化。</a>
 </div>
@@ -94,16 +108,16 @@ img {
 
 <div class="row" style="text-align: center; margin-top:80px;">
   <div class="col-md-12">
-    遞減排序評論資料：
+    <a>遞減排序評論資料：</a>
     <div class="btn-group" data-toggle="buttons">
       <label class="btn btn-secondary sort-btn active">
-        <input type="radio" name="sort-data" id="likes-option" autocomplete="off" checked> 按讚數
+        <input type="radio" name="sort-data" id="likes-option" autocomplete="off" checked> <a>按讚數</a>
       </label>
       <label class="btn btn-secondary sort-btn">
-        <input type="radio" name="sort-data" id="replies-option" autocomplete="off"> 回應數
+        <input type="radio" name="sort-data" id="replies-option" autocomplete="off"> <a>回應數</a>
       </label>
       <label class="btn btn-secondary sort-btn">
-        <input type="radio" name="sort-data" id="created-time-option" autocomplete="off"> 發布時間
+        <input type="radio" name="sort-data" id="created-time-option" autocomplete="off"> <a>發布時間</a>
       </label>
     </div>
   </div>
