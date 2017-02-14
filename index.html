@@ -1,0 +1,503 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<style>
+* {
+    /*border: 1px solid red;*/
+}
+
+body {
+  font-family: "Helvetica","Open Sans", "Hiragino Sans GB", "Source Sans Pro", "Microsoft YaHei", "微软雅黑", "STHeiti", "WenQuanYi Micro Hei", sans-serif;
+  margin: 0;
+  padding: 5px;
+}
+
+circle {
+  stroke: #fff;
+}
+
+#tooltip {
+        position: absolute;
+        width: 400px;
+        height: auto;
+        padding: 10px;
+        background-color: white;
+        -webkit-border-radius: 10px;
+        -moz-border-radius: 10px;
+        border-radius: 10px;
+        -webkit-box-shadow: 4px 4px 10px rgba(0, 0, 0, 0.4);
+        -moz-box-shadow: 4px 4px 10px rgba(0, 0, 0, 0.4);
+        box-shadow: 4px 4px 10px rgba(0, 0, 0, 0.4);
+        pointer-events: none;
+}
+
+#tooltip.hidden {
+        display: none;
+}
+
+#tooltip p {
+        margin: 0;
+        font-family: sans-serif;
+        font-size: 16px;
+        line-height: 20px;
+}
+
+h1 {
+  /*text-align: center;*/
+  padding-left: 10px;
+  margin-bottom: 2px;
+  color: #333;
+}
+.source {
+  text-align: center;
+  padding-left: 10px;
+}
+.source a, .source a:hover {
+  color: #888;
+}
+
+.image-cropper {
+    width: 50px;
+    height: 50px;
+    position: relative;
+    overflow: hidden;
+    border-radius: 50%;
+}
+
+img {
+    display: inline;
+    margin: 0 auto;
+    height: 100%;
+    width: auto;
+}
+
+.btn {
+  cursor: pointer;
+}
+
+</style>
+<body>
+<!-- <p id="like_count">likes</p>
+<p id="message">message</p> -->
+<title>Facebook 單篇文章評論情況泡泡圖</title>
+<h1 style="text-align: center;">Facebook 單篇文章評論情況泡泡圖</h1>
+<div class="source">
+<a>利用 Multi-Foci Force Layout 將 Facebook 單篇文章中，一則回應以上的評論進行視覺化。</a>
+</div>
+<div class="source">
+<a>其中，每一團同顏色的泡泡都是一則評論及其底下相關回應，而評論本身泡泡外圈為黑色，回應則無，泡泡的大小取決於得到的讚數。</a>
+</div>
+<div style="text-align: center; margin-top:50px;">
+<div class='fb-post' data-href='https://www.facebook.com/109249609124014/posts/1031400046908961' data-width='700'>
+  <div class='fb-xfbml-parse-ignore'></div>
+</div>
+</div>
+
+<div class="row" style="text-align: center; margin-top:80px;">
+  <div class="col-md-12">
+    遞減排序評論資料：
+    <div class="btn-group" data-toggle="buttons">
+      <label class="btn btn-secondary sort-btn active">
+        <input type="radio" name="sort-data" id="likes-option" autocomplete="off" checked> 按讚數
+      </label>
+      <label class="btn btn-secondary sort-btn">
+        <input type="radio" name="sort-data" id="replies-option" autocomplete="off"> 回應數
+      </label>
+      <label class="btn btn-secondary sort-btn">
+        <input type="radio" name="sort-data" id="created-time-option" autocomplete="off"> 發布時間
+      </label>
+    </div>
+  </div>
+</div>
+
+
+<!-- <div style="display:block; margin:0 auto;"> -->
+  <!-- <iframe src="https://www.facebook.com/plugins/post.php?href=https%3A%2F%2Fwww.facebook.com%2FPttTW%2Fposts%2F10154037406081364&width=500" width="500" height="482" style="display:block;margin: auto;border:none;overflow:hidden" scrolling="no" frameborder="0" allowTransparency="true"></iframe> -->
+<!-- </div> -->
+
+<div id="tooltip" class="hidden">
+  <p id ="name"><strong>Important Label Heading</strong></p>
+  <p> </p>
+  <p><span id="message">100</span></p>
+</div>
+
+<div id="fb-root"></div>
+<script>(function(d, s, id) {
+  var js, fjs = d.getElementsByTagName(s)[0];
+  if (d.getElementById(id)) return;
+  js = d.createElement(s); js.id = id;
+  js.src = "//connect.facebook.net/zh_TW/sdk.js#xfbml=1&version=v2.8";
+  fjs.parentNode.insertBefore(js, fjs);
+}(document, 'script', 'facebook-jssdk'));</script>
+
+<script src="//d3js.org/d3.v3.min.js"></script>
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/css/bootstrap.min.css" integrity="sha384-rwoIResjU2yc3z8GV/NPeZWAv56rSmLldC3R/AZzGRnGxQQKnKkoFVhFQhNUwEyJ" crossorigin="anonymous">
+<script src="https://code.jquery.com/jquery-3.1.1.slim.min.js" integrity="sha384-A7FZj7v+d/sdmMqp/nOQwliLvUsJfDHW+k9Omg/a/EheAdgtzNs3hpfag6Ed950n" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/tether/1.4.0/js/tether.min.js" integrity="sha384-DztdAPBWPRXSA/3eYEEUWrWCy7G5KFbe8fFjk5JAIxUYHKkDx6Qin1DkWx51bBrb" crossorigin="anonymous"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/js/bootstrap.min.js" integrity="sha384-vBWWzlZJ8ea9aCX4pEW3rVHjgjt7zpkNpZk+02D9phzyeVkE+jo0ieGizqPLForn" crossorigin="anonymous"></script>
+<script>
+//263222741363_10154037406081364
+//109249609124014_1031400046908961
+//109249609124014_1031400046908961
+d3.json("109249609124014_1031400046908961.json", function(json) {
+
+  var first_state_data = json.comments.data.filter(function(d) {
+    return ("comments" in d && d.comments.data.length > 0);
+    //|| (d.like_count > 0);
+  });
+
+  var counter = 0;
+  first_state_data.forEach(function(d, i) {
+    d.key = counter;
+    counter += 1;
+
+    if("comments" in d) {
+      d.comments.data.forEach(function(sub_d, i) {
+        sub_d.key = counter;
+        counter += 1;
+      });
+    }
+  })
+
+  first_state_data.sort(function(a, b) { return b.like_count - a.like_count; });
+
+  var key = function(d) {
+    return d.key;
+  };
+
+  var width = 960,
+      height = 30 * first_state_data.length,
+      padding = 6, // separation between nodes
+      maxRadius = 4;
+
+  var n = d3.sum(first_state_data, function(d) { return ("comments" in d) ? d.comments.data.length : 0; }) + first_state_data.length, // total number of nodes
+      m = first_state_data.length; // number of distinct clusters
+
+  var color = d3.scale.category20()
+      .domain(d3.range(m));
+
+  var x = d3.scale.ordinal()
+      .domain([0, 1, 2, 3])
+      .rangePoints([0, width], 1);
+
+  var y = d3.scale.ordinal()
+      .domain(d3.range(m/4))
+      .rangePoints([0, height], 3);
+
+  var r = d3.scale.linear()
+      .domain([0, Math.sqrt(d3.max(first_state_data, function(d) { return d.like_count }))])
+      .range([3, 30]);
+
+  var format = d3.time.format("%Y-%m-%dT%X%Z");
+
+  var facebook_style_time = d3.time.format("%B %d, %Y at %I:%M%p")
+
+  // var nodes = d3.range(n).map(function() {
+  //   var i = Math.floor(Math.random() * m),
+  //       v = (i + 1) / m * -Math.log(Math.random());
+  //   return {
+  //     radius: Math.sqrt(v) * maxRadius,
+  //     color: color(i),
+  //     cx: x(i % 4),
+  //     cy: y(Math.floor(i / 4))
+  //   };
+  // });
+
+  var nodes = [];
+  for(var i = 0; i < first_state_data.length; i += 1) {
+    nodes.push({  is_cluster: true,
+                  radius: r(Math.sqrt((first_state_data[i].like_count + 1))),
+                  color: color(i),
+                  cx: x(i % 4),
+                  cy: y(Math.floor(i / 4)),
+                  texty: y(Math.floor(i / 4)) + 50,
+                  like: first_state_data[i].like_count,
+                  name: first_state_data[i].from.name,
+                  message: first_state_data[i].message,
+                  id: first_state_data[i].from.id,
+                  comment: ("comments" in first_state_data[i]) ? first_state_data[i].comments.data.length : 0,
+                  created_time: format.parse(first_state_data[i].created_time),
+                  key: first_state_data[i].key
+                });
+
+    if(first_state_data[i].comments) {
+      for(var j = 0; j < first_state_data[i].comments.data.length; j += 1) {
+        nodes.push({  radius: r(Math.sqrt((first_state_data[i].comments.data[j].like_count + 1))),
+                      color: color(i),
+                      cx: x(i % 4),
+                      cy: y(Math.floor(i / 4)),
+                      texty: y(Math.floor(i / 4)) + 50,
+                      like: first_state_data[i].comments.data[j].like_count,
+                      name: first_state_data[i].comments.data[j].from.name,
+                      message: first_state_data[i].comments.data[j].message,
+                      id: first_state_data[i].comments.data[j].from.id,
+                      created_time: format.parse(first_state_data[i].comments.data[j].created_time),
+                      key: first_state_data[i].comments.data[j].key
+                    });
+      }
+    }
+  }
+
+  var force = d3.layout.force()
+      .nodes(nodes)
+      .size([width, height])
+      .gravity(0)
+      .charge(0)
+      .on("tick", tick)
+      .start();
+
+  var tooltip = d3.select("#tooltip")
+
+  d3.select("body")
+  .on("touchstart", function(d) {
+    d3.select("#tooltip").classed("hidden", true);
+  });
+
+  var svg = d3.select("body").append("svg")
+      .attr("width", width)
+      .attr("height", height)
+      .style("display", "block")
+      .style("margin", "auto");
+
+  var circle = svg.selectAll("circle")
+      .data(nodes, key)
+    .enter().append("circle")
+      .attr("r", function(d) { return d.radius; })
+      .style("fill", function(d) { return d.color; })
+      // .style("fill", function(d) { if(d.is_cluster) return "black"; else return d.color; })
+      .style("stroke", function(d) { if(d.is_cluster) return "black"; })
+      .style("stroke-width", function(d) { if(d.is_cluster) return 3; })
+      .on("mouseover", function(d) {
+        if(d.is_cluster) {
+          tooltip.html("<img class='image-cropper' src=\"http://graph.facebook.com/"+d.id+"/picture\">" + d.name +
+            "</br>" + d.message +
+            "</br>" + d.like + " people like this" +
+            "</br>" + d.comment + " replies" +
+            "</br>" + facebook_style_time(d.created_time));
+        } else {
+          tooltip.html("<img class='image-cropper' src=\"http://graph.facebook.com/"+d.id+"/picture\">" + d.name +
+            "</br>" + d.message +
+            "</br>" + d.like + " people like this" +
+            "</br>" + facebook_style_time(d.created_time));
+        }
+
+        //Show the tooltip
+        d3.select("#tooltip").classed("hidden", false);
+      })
+      .on("mousemove", function(d) {
+        var page_x = d3.event.pageX,
+            page_y = d3.event.pageY;
+
+        var tooltip_width  = parseInt(d3.select("#tooltip").style("width"), 10),
+            tooltip_height = parseInt(d3.select("#tooltip").style("height"), 10);
+
+        if(d.cx >= width / 2) {
+          page_x -= tooltip_width;
+        }
+
+        if(d.cy >= height / 2) {
+          page_y -= tooltip_height;
+        }
+
+        tooltip.style("left", page_x + "px")
+        .style("top", page_y + "px");
+
+        //Show the tooltip
+        d3.select("#tooltip").classed("hidden", false);
+      })
+      .on("mouseout", function() {
+        //Hide the tooltip
+        d3.select("#tooltip").classed("hidden", true);
+      })
+      .call(force.drag);
+
+  // var text = svg.selectAll("text")
+  //     .data(nodes)
+  //     .enter().append("text")
+  //     .attr("x", function(d){ return d.cx; })
+  //     .attr("y", function(d){ return d.texty; })
+  //     .text("test");
+
+  $(".btn-group .sort-btn :input").change(function() {
+      // console.log(this.id); // points to the clicked input button
+      sortChart(this.id);
+  });
+
+  function sortChart(type) {
+    switch (type) {
+      case "likes-option":
+        first_state_data.sort(function(a, b) { return b.like_count - a.like_count; });
+        break;
+
+      case "replies-option":
+        first_state_data.sort(function(a, b) { return b.comment_count - a.comment_count; });
+        break;
+
+      case "created-time-option":
+        first_state_data.sort(function(a, b) { return format.parse(b.created_time) - format.parse(a.created_time); });
+        break;
+
+      default:
+    }
+
+    var nodes2 = [];
+    for(var i = 0; i < first_state_data.length; i += 1) {
+      nodes2.push({ is_cluster: true,
+                    radius: r(Math.sqrt((first_state_data[i].like_count + 1))),
+                    color: $.grep(nodes, function(e){ return e.key == first_state_data[i].key; })[0].color,
+                    cx: x(i % 4),
+                    cy: y(Math.floor(i / 4)),
+                    texty: y(Math.floor(i / 4)) + 50,
+                    like: first_state_data[i].like_count,
+                    name: first_state_data[i].from.name,
+                    message: first_state_data[i].message,
+                    id: first_state_data[i].from.id,
+                    comment: ("comments" in first_state_data[i]) ? first_state_data[i].comments.data.length : 0,
+                    created_time: format.parse(first_state_data[i].created_time),
+                    key: first_state_data[i].key
+                  });
+
+      if(first_state_data[i].comments) {
+        for(var j = 0; j < first_state_data[i].comments.data.length; j += 1) {
+          // console.log($.grep(nodes, function(e){ return e.key == first_state_data[i].comments.data[j].key; })[0].color)
+          nodes2.push({ radius: r(Math.sqrt((first_state_data[i].comments.data[j].like_count + 1))),
+                        color: $.grep(nodes, function(e){ return e.key == first_state_data[i].comments.data[j].key; })[0].color,
+                        cx: x(i % 4),
+                        cy: y(Math.floor(i / 4)),
+                        texty: y(Math.floor(i / 4)) + 50,
+                        like: first_state_data[i].comments.data[j].like_count,
+                        name: first_state_data[i].comments.data[j].from.name,
+                        message: first_state_data[i].comments.data[j].message,
+                        id: first_state_data[i].comments.data[j].from.id,
+                        created_time: format.parse(first_state_data[i].comments.data[j].created_time),
+                        key: first_state_data[i].comments.data[j].key
+                      });
+        }
+      }
+    }
+
+    nodes = nodes2;
+
+    var force = d3.layout.force()
+        .nodes(nodes)
+        .size([width, height])
+        .gravity(0)
+        .charge(0)
+        .on("tick", tick)
+        .start();
+
+    // var svg = d3.select("body").append("svg")
+    //     .attr("width", width)
+    //     .attr("height", height)
+    //     .style("display", "block")
+    //     .style("margin", "auto");
+
+    var tooltip = d3.select("#tooltip")
+
+    var circle = svg.selectAll("circle")
+        .data(nodes, key)
+      // .enter().append("circle")
+        .attr("r", function(d) { return d.radius; })
+        .style("fill", function(d) { return d.color; })
+        // .style("fill", function(d) { if(d.is_cluster) return "black"; else return d.color; })
+        .style("stroke", function(d) { if(d.is_cluster) return "black"; })
+        .style("stroke-width", function(d) { if(d.is_cluster) return 3; })
+        .on("mouseover", function(d) {
+          if(d.is_cluster) {
+            tooltip.html("<img class='image-cropper' src=\"http://graph.facebook.com/"+d.id+"/picture\">" + d.name +
+              "</br>" + d.message +
+              "</br>" + d.like + " people like this" +
+              "</br>" + d.comment + " replies" +
+              "</br>" + facebook_style_time(d.created_time));
+          } else {
+            tooltip.html("<img class='image-cropper' src=\"http://graph.facebook.com/"+d.id+"/picture\">" + d.name +
+              "</br>" + d.message +
+              "</br>" + d.like + " people like this" +
+              "</br>" + facebook_style_time(d.created_time));
+          }
+
+          //Show the tooltip
+          d3.select("#tooltip").classed("hidden", false);
+        })
+        .on("mousemove", function(d) {
+          var page_x = d3.event.pageX,
+              page_y = d3.event.pageY;
+
+          var tooltip_width  = parseInt(d3.select("#tooltip").style("width"), 10),
+              tooltip_height = parseInt(d3.select("#tooltip").style("height"), 10);
+
+          if(d.cx >= width / 2) {
+            page_x -= tooltip_width;
+          }
+
+          if(d.cy >= height / 2) {
+            page_y -= tooltip_height;
+          }
+
+          tooltip.style("left", page_x + "px")
+          .style("top", page_y + "px");
+
+          //Show the tooltip
+          d3.select("#tooltip").classed("hidden", false);
+        })
+        .on("mouseout", function() {
+          //Hide the tooltip
+          d3.select("#tooltip").classed("hidden", true);
+        })
+        .call(force.drag);
+
+        // force.start();
+
+    // function tick_nodes2(e) {
+    //   circle
+    //       .each(gravity(.2 * e.alpha))
+    //       .each(collide(.5, nodes2))
+    //       .attr("cx", function(d) { return d.x; })
+    //       .attr("cy", function(d) { return d.y; });
+    // }
+  }
+
+  function tick(e) {
+    circle
+        .each(gravity(.2 * e.alpha))
+        .each(collide(.5))
+        .attr("cx", function(d) { return d.x; })
+        .attr("cy", function(d) { return d.y; });
+  }
+
+  // Move nodes toward cluster focus.
+  function gravity(alpha) {
+    return function(d) {
+      d.y += (d.cy - d.y) * alpha;
+      d.x += (d.cx - d.x) * alpha;
+    };
+  }
+
+  // Resolve collisions between nodes.
+  function collide(alpha) {
+    var quadtree = d3.geom.quadtree(nodes);
+    return function(d) {
+      var r = d.radius + maxRadius + padding,
+          nx1 = d.x - r,
+          nx2 = d.x + r,
+          ny1 = d.y - r,
+          ny2 = d.y + r;
+      quadtree.visit(function(quad, x1, y1, x2, y2) {
+        if (quad.point && (quad.point !== d)) {
+          var x = d.x - quad.point.x,
+              y = d.y - quad.point.y,
+              l = Math.sqrt(x * x + y * y),
+              r = d.radius + quad.point.radius + (d.color !== quad.point.color) * padding;
+          if (l < r) {
+            l = (l - r) / l * alpha;
+            d.x -= x *= l;
+            d.y -= y *= l;
+            quad.point.x += x;
+            quad.point.y += y;
+          }
+        }
+        return x1 > nx2 || x2 < nx1 || y1 > ny2 || y2 < ny1;
+      });
+    };
+  }
+});
+</script>
