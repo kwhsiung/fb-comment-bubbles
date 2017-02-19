@@ -102,8 +102,8 @@ input {
 }
 
 .stickers {
-    width: 70px;
-    height: 70px;
+    width: 140px;
+    height: 140px;
     position: relative;
     overflow: hidden;
 }
@@ -321,7 +321,7 @@ d3.json("109249609124014_1409322115783417.json", function(json) {
           if(d.attachment !== null) {
             tooltip.html("<img class='image-cropper' src=\"http://graph.facebook.com/"+d.id+"/picture\">" + d.name +
               "</br>" + d.message +
-              "</br>" + "<img class='stickers' src=\""+d.attachment.url+"\">" +
+              "</br>" + "<img class='stickers' src=\""+d.attachment.media.image.src+"\">" +
               "</br>" + d.like + " people like this" +
               "</br>" + d.comment + " replies" +
               "</br>" + facebook_style_time(d.created_time));
@@ -335,7 +335,7 @@ d3.json("109249609124014_1409322115783417.json", function(json) {
         } else {
           if (d.attachment !== null) {
             tooltip.html("<img class='image-cropper' src=\"http://graph.facebook.com/"+d.id+"/picture\">" + d.name +
-              "</br>" + "<img class='stickers' src=\""+d.attachment.url+"\">" +
+              "</br>" + "<img class='stickers' src=\""+d.attachment.media.image.src+"\">" +
               "</br>" + d.message +
               "</br>" + d.like + " people like this" +
               "</br>" + facebook_style_time(d.created_time));
@@ -475,7 +475,7 @@ d3.json("109249609124014_1409322115783417.json", function(json) {
             if(d.attachment !== null) {
               tooltip.html("<img class='image-cropper' src=\"http://graph.facebook.com/"+d.id+"/picture\">" + d.name +
                 "</br>" + d.message +
-                "</br>" + "<img class='stickers' src=\""+d.attachment.url+"\">" +
+                "</br>" + "<img class='stickers' src=\""+d.attachment.media.image.src+"\">" +
                 "</br>" + d.like + " people like this" +
                 "</br>" + d.comment + " replies" +
                 "</br>" + facebook_style_time(d.created_time));
@@ -489,7 +489,7 @@ d3.json("109249609124014_1409322115783417.json", function(json) {
           } else {
             if (d.attachment !== null) {
               tooltip.html("<img class='image-cropper' src=\"http://graph.facebook.com/"+d.id+"/picture\">" + d.name +
-                "</br>" + "<img class='stickers' src=\""+d.attachment.url+"\">" +
+                "</br>" + "<img class='stickers' src=\""+d.attachment.media.image.src+"\">" +
                 "</br>" + d.message +
                 "</br>" + d.like + " people like this" +
                 "</br>" + facebook_style_time(d.created_time));
