@@ -101,6 +101,13 @@ input {
     border-radius: 50%;
 }
 
+.stickers {
+    width: 70px;
+    height: 70px;
+    position: relative;
+    overflow: hidden;
+}
+
 img {
     display: inline;
     margin: 0 auto;
@@ -125,7 +132,7 @@ img {
 <a>其中，每一團同顏色的泡泡都是一則評論及其底下相關回應，而評論本身泡泡外圈為黑色，回應則無，泡泡的大小取決於得到的讚數。</a>
 </div>
 <div style="text-align: center; margin-top:50px;">
-<div class='fb-post' data-href='https://www.facebook.com/109249609124014/posts/1031400046908961' data-width='700'>
+<div class='fb-post' data-href='https://www.facebook.com/109249609124014/posts/1409322115783417' data-width='700'>
   <div class='fb-xfbml-parse-ignore'></div>
 </div>
 </div>
@@ -179,7 +186,7 @@ img {
 //263222741363_10154037406081364
 //109249609124014_1031400046908961
 //109249609124014_1031400046908961
-d3.json("109249609124014_1031400046908961.json", function(json) {
+d3.json("109249609124014_1409322115783417.json", function(json) {
 
   var first_state_data = json.comments.data.filter(function(d) {
     return ("comments" in d && d.comments.data.length > 0);
@@ -257,6 +264,7 @@ d3.json("109249609124014_1031400046908961.json", function(json) {
                   id: first_state_data[i].from.id,
                   comment: ("comments" in first_state_data[i]) ? first_state_data[i].comments.data.length : 0,
                   created_time: format.parse(first_state_data[i].created_time),
+                  attachment: ("attachment" in first_state_data[i]) ? first_state_data[i].attachment : null,
                   key: first_state_data[i].key
                 });
 
@@ -272,6 +280,7 @@ d3.json("109249609124014_1031400046908961.json", function(json) {
                       message: first_state_data[i].comments.data[j].message,
                       id: first_state_data[i].comments.data[j].from.id,
                       created_time: format.parse(first_state_data[i].comments.data[j].created_time),
+                      attachment: ("attachment" in first_state_data[i].comments.data[j]) ? first_state_data[i].comments.data[j].attachment : null,
                       key: first_state_data[i].comments.data[j].key
                     });
       }
@@ -309,16 +318,33 @@ d3.json("109249609124014_1031400046908961.json", function(json) {
       .style("stroke-width", function(d) { if(d.is_cluster) return 3; })
       .on("mouseover", function(d) {
         if(d.is_cluster) {
-          tooltip.html("<img class='image-cropper' src=\"http://graph.facebook.com/"+d.id+"/picture\">" + d.name +
-            "</br>" + d.message +
-            "</br>" + d.like + " people like this" +
-            "</br>" + d.comment + " replies" +
-            "</br>" + facebook_style_time(d.created_time));
+          if(d.attachment !== null) {
+            tooltip.html("<img class='image-cropper' src=\"http://graph.facebook.com/"+d.id+"/picture\">" + d.name +
+              "</br>" + d.message +
+              "</br>" + "<img class='stickers' src=\""+d.attachment.url+"\">" +
+              "</br>" + d.like + " people like this" +
+              "</br>" + d.comment + " replies" +
+              "</br>" + facebook_style_time(d.created_time));
+          } else {
+            tooltip.html("<img class='image-cropper' src=\"http://graph.facebook.com/"+d.id+"/picture\">" + d.name +
+              "</br>" + d.message +
+              "</br>" + d.like + " people like this" +
+              "</br>" + d.comment + " replies" +
+              "</br>" + facebook_style_time(d.created_time));
+          }
         } else {
-          tooltip.html("<img class='image-cropper' src=\"http://graph.facebook.com/"+d.id+"/picture\">" + d.name +
-            "</br>" + d.message +
-            "</br>" + d.like + " people like this" +
-            "</br>" + facebook_style_time(d.created_time));
+          if (d.attachment !== null) {
+            tooltip.html("<img class='image-cropper' src=\"http://graph.facebook.com/"+d.id+"/picture\">" + d.name +
+              "</br>" + "<img class='stickers' src=\""+d.attachment.url+"\">" +
+              "</br>" + d.message +
+              "</br>" + d.like + " people like this" +
+              "</br>" + facebook_style_time(d.created_time));
+          } else {
+            tooltip.html("<img class='image-cropper' src=\"http://graph.facebook.com/"+d.id+"/picture\">" + d.name +
+              "</br>" + d.message +
+              "</br>" + d.like + " people like this" +
+              "</br>" + facebook_style_time(d.created_time));
+          }
         }
 
         //Show the tooltip
@@ -394,6 +420,7 @@ d3.json("109249609124014_1031400046908961.json", function(json) {
                     id: first_state_data[i].from.id,
                     comment: ("comments" in first_state_data[i]) ? first_state_data[i].comments.data.length : 0,
                     created_time: format.parse(first_state_data[i].created_time),
+                    attachment: ("attachment" in first_state_data[i]) ? first_state_data[i].attachment : null,
                     key: first_state_data[i].key
                   });
 
@@ -410,6 +437,7 @@ d3.json("109249609124014_1031400046908961.json", function(json) {
                         message: first_state_data[i].comments.data[j].message,
                         id: first_state_data[i].comments.data[j].from.id,
                         created_time: format.parse(first_state_data[i].comments.data[j].created_time),
+                        attachment: ("attachment" in first_state_data[i].comments.data[j]) ? first_state_data[i].comments.data[j].attachment : null,
                         key: first_state_data[i].comments.data[j].key
                       });
         }
@@ -444,16 +472,33 @@ d3.json("109249609124014_1031400046908961.json", function(json) {
         .style("stroke-width", function(d) { if(d.is_cluster) return 3; })
         .on("mouseover", function(d) {
           if(d.is_cluster) {
-            tooltip.html("<img class='image-cropper' src=\"http://graph.facebook.com/"+d.id+"/picture\">" + d.name +
-              "</br>" +"<p>" +d.message +"</p>" +
-              "</br>" + d.like + " people like this" +
-              "</br>" + d.comment + " replies" +
-              "</br>" + facebook_style_time(d.created_time));
+            if(d.attachment !== null) {
+              tooltip.html("<img class='image-cropper' src=\"http://graph.facebook.com/"+d.id+"/picture\">" + d.name +
+                "</br>" + d.message +
+                "</br>" + "<img class='stickers' src=\""+d.attachment.url+"\">" +
+                "</br>" + d.like + " people like this" +
+                "</br>" + d.comment + " replies" +
+                "</br>" + facebook_style_time(d.created_time));
+            } else {
+              tooltip.html("<img class='image-cropper' src=\"http://graph.facebook.com/"+d.id+"/picture\">" + d.name +
+                "</br>" + d.message +
+                "</br>" + d.like + " people like this" +
+                "</br>" + d.comment + " replies" +
+                "</br>" + facebook_style_time(d.created_time));
+            }
           } else {
-            tooltip.html("<img class='image-cropper' src=\"http://graph.facebook.com/"+d.id+"/picture\">" + d.name +
-              "</br>" + d.message +
-              "</br>" + d.like + " people like this" +
-              "</br>" + facebook_style_time(d.created_time));
+            if (d.attachment !== null) {
+              tooltip.html("<img class='image-cropper' src=\"http://graph.facebook.com/"+d.id+"/picture\">" + d.name +
+                "</br>" + "<img class='stickers' src=\""+d.attachment.url+"\">" +
+                "</br>" + d.message +
+                "</br>" + d.like + " people like this" +
+                "</br>" + facebook_style_time(d.created_time));
+            } else {
+              tooltip.html("<img class='image-cropper' src=\"http://graph.facebook.com/"+d.id+"/picture\">" + d.name +
+                "</br>" + d.message +
+                "</br>" + d.like + " people like this" +
+                "</br>" + facebook_style_time(d.created_time));
+            }
           }
 
           //Show the tooltip
